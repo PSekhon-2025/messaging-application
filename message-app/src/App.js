@@ -1,10 +1,18 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import ChatDashboard from "./pages/ChatDashboard";
+import ChatRoom from "./pages/ChatRoom";
 
 function App() {
   return (
-    <div>
-      <h1>Messaging App</h1>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/dashboard" element={<ChatDashboard />} />
+        <Route path="/chat/:username" element={<ChatRoom />} />
+      </Routes>
+    </Router>
   );
 }
 

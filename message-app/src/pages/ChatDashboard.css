@@ -1,0 +1,61 @@
+/* Container styling */
+.dashboard-container {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 40px 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Greeting Section */
+  .dashboard-header {
+    background-color: #8A9A5B; /* Moss Green */
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: white;
+  }
+  
+  .dashboard-header h2 {
+    margin: 0;
+    font-size: 28px;
+  }
+  
+  .dashboard-header p {
+    margin-top: 8px;
+    font-size: 16px;
+  }
+  
+  /* User List Section */
+  .user-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  /* Individual user card */
+  .user-card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .user-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    background-color: #f0f8f0;
+  }
+  
+  .user-card h4 {
+    margin: 0;
+    font-size: 18px;
+    color: #228B22; /* Forest Green */
+  }
+  
