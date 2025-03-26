@@ -40,6 +40,7 @@
     gap: 10px;
   }
   
+  /* Chat bubble base style */
   .chat-bubble {
     max-width: 70%;
     padding: 10px 14px;
@@ -47,8 +48,10 @@
     font-size: 15px;
     line-height: 1.4;
     word-wrap: break-word;
+    white-space: pre-wrap;
   }
   
+  /* Sent by current user: right-aligned, forest green */
   .sent {
     align-self: flex-end;
     background-color: #228B22; /* Forest Green */
@@ -56,6 +59,7 @@
     border-bottom-right-radius: 0;
   }
   
+  /* Received from other user: left-aligned, moss green */
   .received {
     align-self: flex-start;
     background-color: #8A9A5B; /* Moss Green */
