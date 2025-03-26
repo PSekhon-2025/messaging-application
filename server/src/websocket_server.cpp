@@ -74,10 +74,10 @@ void WebSocketServer::handle_read(std::shared_ptr<ws_stream> ws, std::shared_ptr
                         std::string username = j["username"];
                         handle_login(username, ws);
                     }
-                    else if (msgType == "message" && j.contains("from") && j.contains("to") &&
+                    else if (msgType == "message" && j.contains("from") && j.contains("room") &&
                              (j.contains("text") || j.contains("content"))) {
                         std::string from = j["from"];
-                        std::string to = j["to"];
+                        std::string to = j["room"];
                         // Use "text" if available; otherwise "content"
                         std::string text = j.contains("text") ? j["text"].get<std::string>() : j["content"].get<std::string>();
 
