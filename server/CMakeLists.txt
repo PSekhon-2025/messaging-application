@@ -3,13 +3,21 @@ project(server)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Use Boost manually (header-only)
-include_directories(/opt/homebrew/include)
+# Let CMake find Boost and include it properly
+find_package(Boost REQUIRED COMPONENTS system thread)
 
-# Or if you manually downloaded Boost, use this:
-# include_directories(/Users/pushpindersingh/dev/boost_1_84_0)
+# Include Boost headers
+include_directories(${Boost_INCLUDE_DIRS})
 
+# Your source files
 add_executable(server
         src/main.cpp
         src/websocket_server.cpp
+)
+
+# Link Boost libraries and pthread
+target_link_libraries(server
+        PRIVATE
+        ${Boost_LIBRARIES}
+        pthread
 )
