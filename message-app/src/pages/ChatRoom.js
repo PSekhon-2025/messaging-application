@@ -51,7 +51,7 @@ const ChatRoom = () => {
       from: currentUser,
       room: room,
       content: text,
-      timestamp: new Date().toISOString(), // ⏰ add timestamp
+      timestamp: new Date().toISOString(), 
     };
 
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
@@ -93,8 +93,9 @@ const ChatRoom = () => {
             {msg.timestamp && (
               <span className="timestamp">
                 {new Date(msg.timestamp).toLocaleTimeString([], {
-                  hour: "2-digit",
+                  hour: "numeric",
                   minute: "2-digit",
+                  hour12: true,
                 })}
               </span>
             )}
