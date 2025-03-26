@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 const ChatRoom = () => {
-  const { username: room } = useParams(); // 'username' now acts as 'room name'
+  const { username: room } = useParams(); // 'username' is actually the room name
   const navigate = useNavigate();
   const currentUser = localStorage.getItem("username");
   const [messages, setMessages] = useState([]);
@@ -51,6 +51,7 @@ const ChatRoom = () => {
       from: currentUser,
       room: room,
       content: text,
+      timestamp: new Date().toISOString(), // ⏰ add timestamp
     };
 
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
@@ -82,11 +83,21 @@ const ChatRoom = () => {
             {msg.from !== currentUser && (
               <span className="sender-name">{msg.from}</span>
             )}
-            <div className={`chat-bubble ${
-              msg.from === currentUser ? "sent" : "received"
-            }`}>
+            <div
+              className={`chat-bubble ${
+                msg.from === currentUser ? "sent" : "received"
+              }`}
+            >
               <p>{msg.content}</p>
             </div>
+            {msg.timestamp && (
+              <span className="timestamp">
+                {new Date(msg.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            )}
           </div>
         ))}
       </div>
