@@ -75,14 +75,18 @@ const ChatRoom = () => {
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`chat-bubble ${
-              msg.from === currentUser ? "sent" : "received"
+            className={`message-block ${
+              msg.from === currentUser ? "sent-block" : "received-block"
             }`}
           >
             {msg.from !== currentUser && (
               <span className="sender-name">{msg.from}</span>
             )}
-            <p>{msg.content}</p>
+            <div className={`chat-bubble ${
+              msg.from === currentUser ? "sent" : "received"
+            }`}>
+              <p>{msg.content}</p>
+            </div>
           </div>
         ))}
       </div>

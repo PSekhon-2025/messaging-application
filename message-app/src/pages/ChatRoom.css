@@ -7,6 +7,7 @@
     box-sizing: border-box;
   }
   
+  /* Header with room name and back button */
   .chatroom-header {
     display: flex;
     align-items: center;
@@ -27,6 +28,7 @@
     cursor: pointer;
   }
   
+  /* Chat messages window */
   .chat-window {
     flex: 1;
     overflow-y: auto;
@@ -40,9 +42,34 @@
     gap: 10px;
   }
   
+  /* Wrapper for sender and message bubble */
+  .message-block {
+    display: flex;
+    flex-direction: column;
+    max-width: 70%;
+  }
+  
+  .sent-block {
+    align-self: flex-end;
+    text-align: right;
+  }
+  
+  .received-block {
+    align-self: flex-start;
+    text-align: left;
+  }
+  
+  /* Sender name above bubble */
+  .sender-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 4px;
+    display: block;
+  }
+  
   /* Chat bubble base style */
   .chat-bubble {
-    max-width: 70%;
     padding: 10px 14px;
     border-radius: 16px;
     font-size: 15px;
@@ -51,22 +78,21 @@
     white-space: pre-wrap;
   }
   
-  /* Sent by current user: right-aligned, forest green */
+  /* Sent by current user: right-aligned */
   .sent {
-    align-self: flex-end;
     background-color: #228B22; /* Forest Green */
     color: white;
     border-bottom-right-radius: 0;
   }
   
-  /* Received from other user: left-aligned, moss green */
+  /* Received from other user: left-aligned */
   .received {
-    align-self: flex-start;
     background-color: #8A9A5B; /* Moss Green */
     color: white;
     border-bottom-left-radius: 0;
   }
   
+  /* Input + Send Button area */
   .message-input-area {
     display: flex;
     gap: 8px;
@@ -92,13 +118,5 @@
   
   .send-button:hover {
     background-color: #196619;
-  }
-  
-  .sender-name {
-    font-weight: bold;
-    font-size: 12px;
-    color: #333;
-    margin-bottom: 4px;
-    display: block;
   }
   
