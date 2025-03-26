@@ -94,3 +94,11 @@
     background-color: #196619;
   }
   
+  .sender-name {
+    font-weight: bold;
+    font-size: 12px;
+    color: #333;
+    margin-bottom: 4px;
+    display: block;
+  }
+  
