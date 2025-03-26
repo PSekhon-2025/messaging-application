@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 const ChatRoom = () => {
-  const { username } = useParams(); // The user you're chatting with
+  const { username: room } = useParams(); // 'username' now acts as 'room name'
   const navigate = useNavigate();
   const currentUser = localStorage.getItem("username");
   const [messages, setMessages] = useState([]);
@@ -17,6 +17,7 @@ const ChatRoom = () => {
       const loginMessage = {
         type: "login",
         username: currentUser,
+        room: room,
       };
       ws.current.send(JSON.stringify(loginMessage));
       console.log("Sent login message:", loginMessage);
@@ -25,11 +26,8 @@ const ChatRoom = () => {
     ws.current.onmessage = (message) => {
       const data = JSON.parse(message.data);
 
-      if (
-        data.type === "message" &&
-        ((data.from === currentUser && data.to === username) ||
-          (data.from === username && data.to === currentUser))
-      ) {
+      // Accept only messages for this room
+      if (data.type === "message" && data.room === room) {
         setMessages((prev) => [...prev, data]);
       }
     };
@@ -43,7 +41,7 @@ const ChatRoom = () => {
     };
 
     return () => ws.current?.close();
-  }, [username, currentUser]);
+  }, [room, currentUser]);
 
   const sendMessage = () => {
     if (!text.trim()) return;
@@ -51,7 +49,7 @@ const ChatRoom = () => {
     const messageToSend = {
       type: "message",
       from: currentUser,
-      to: username,
+      room: room,
       content: text,
     };
 
@@ -70,7 +68,7 @@ const ChatRoom = () => {
         <button className="back-button" onClick={() => navigate("/dashboard")}>
           ← Back
         </button>
-        <h2>Chatting with {username}</h2>
+        <h2>Room: {room}</h2>
       </div>
 
       <div className="chat-window">
@@ -81,6 +79,9 @@ const ChatRoom = () => {
               msg.from === currentUser ? "sent" : "received"
             }`}
           >
+            {msg.from !== currentUser && (
+              <span className="sender-name">{msg.from}</span>
+            )}
             <p>{msg.content}</p>
           </div>
         ))}
