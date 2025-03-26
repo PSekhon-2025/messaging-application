@@ -1,3 +1,0 @@
-/mnt/c/Users/shara/OneDrive/Documents/SE3313/os-team-yellow/server/build/CMakeFiles/server.dir
-/mnt/c/Users/shara/OneDrive/Documents/SE3313/os-team-yellow/server/build/CMakeFiles/edit_cache.dir
-/mnt/c/Users/shara/OneDrive/Documents/SE3313/os-team-yellow/server/build/CMakeFiles/rebuild_cache.dir
