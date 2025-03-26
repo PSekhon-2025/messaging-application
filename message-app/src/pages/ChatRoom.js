@@ -10,33 +10,39 @@ const ChatRoom = () => {
   const [text, setText] = useState("");
   const ws = useRef(null);
 
-  // Establish WebSocket connection on component mount
   useEffect(() => {
     ws.current = new WebSocket("ws://localhost:9000");
 
     ws.current.onopen = () => {
-      // Send login message to backend
       const loginMessage = {
         type: "login",
         username: currentUser,
       };
       ws.current.send(JSON.stringify(loginMessage));
+      console.log("Sent login message:", loginMessage);
     };
 
     ws.current.onmessage = (message) => {
       const data = JSON.parse(message.data);
 
-      // Only show messages relevant to this chat
       if (
-        (data.type === "message") &&
+        data.type === "message" &&
         ((data.from === currentUser && data.to === username) ||
-         (data.from === username && data.to === currentUser))
+          (data.from === username && data.to === currentUser))
       ) {
         setMessages((prev) => [...prev, data]);
       }
     };
 
-    return () => ws.current?.close(); // Close connection on unmount
+    ws.current.onerror = (err) => {
+      console.error("WebSocket error:", err);
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket closed");
+    };
+
+    return () => ws.current?.close();
   }, [username, currentUser]);
 
   const sendMessage = () => {
@@ -49,12 +55,13 @@ const ChatRoom = () => {
       content: text,
     };
 
-    // Send message over WebSocket to backend
-    ws.current.send(JSON.stringify(messageToSend));
-
-    // Update local UI
-    setMessages((prev) => [...prev, messageToSend]);
-    setText("");
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      console.log("Sending message:", messageToSend);
+      ws.current.send(JSON.stringify(messageToSend));
+      setText("");
+    } else {
+      console.warn("WebSocket is not open. Cannot send message.");
+    }
   };
 
   return (
