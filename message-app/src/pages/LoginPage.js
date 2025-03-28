@@ -1,5 +1,5 @@
 import "./LoginPage.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
@@ -8,83 +8,112 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    // Establish a WebSocket connection to the server
+    const ws = new WebSocket("ws://localhost:9000");
+    ws.onopen = () => {
+      console.log("Connected to the server");
+    };
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === "login_response") {
+        if (data.status === "success") {
+          navigate("/dashboard");
+        } else {
+          setError(data.message);
+        }
+      } else if (data.type === "signup_response") {
+        setError(data.message);
+        if (data.status === "success") {
+          setIsSignup(false);
+          setUsername("");
+          setPassword("");
+        }
+      }
+    };
+    ws.onerror = (err) => {
+      console.error("WebSocket error:", err);
+      setError("WebSocket connection error.");
+    };
+    setSocket(ws);
+
+    return () => {
+      ws.close();
+    };
+  }, [navigate]);
 
   const handleSubmit = () => {
-    setError(""); // Clear previous errors
+    setError(""); // Clear any previous errors
 
     if (!username.trim() || !password.trim()) {
       setError("Username and password are required.");
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem("users") || "{}");
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      setError("Not connected to server.");
+      return;
+    }
 
     if (isSignup) {
-      if (users[username]) {
-        setError("Username already taken.");
-        return;
-      }
-      users[username] = password;
-      localStorage.setItem("users", JSON.stringify(users));
-      setError("User registered successfully!");
-      setIsSignup(false);
-      setUsername("");
-      setPassword("");
+      // Send a signup message to the server
+      const signupMessage = {
+        type: "signup",
+        username,
+        password,
+      };
+      socket.send(JSON.stringify(signupMessage));
     } else {
-      if (!users[username]) {
-        setError("Invalid username.");
-      } else if (users[username] !== password) {
-        setError("Invalid password.");
-      } else {
-        localStorage.setItem("username", username);
-        navigate("/dashboard");
-      }
+      // Send a login message to the server
+      const loginMessage = {
+        type: "login",
+        username,
+        password,
+      };
+      socket.send(JSON.stringify(loginMessage));
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h2 className="login-title">{isSignup ? "Sign Up" : "Login"}</h2>
-
-        <input
-          className="login-input"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-
-        <input
-          className="login-input"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        {error && (
-          <p className={error.includes("successfully") ? "login-success" : "login-error"}>
-            {error}
-          </p>
-        )}
-
-        <button className="login-button" onClick={handleSubmit}>
-          {isSignup ? "Sign Up" : "Login"}
-        </button>
-
-        <button
-          className="login-switch-button"
-          onClick={() => {
-            setIsSignup(!isSignup);
-            setError("");
-            setUsername("");
-            setPassword("");
-          }}
-        >
-          {isSignup ? "Already have an account? Login" : "Don't have an account? Sign Up"}
-        </button>
+      <div className="login-container">
+        <div className="login-card">
+          <h2 className="login-title">{isSignup ? "Sign Up" : "Login"}</h2>
+          <input
+              className="login-input"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+              className="login-input"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+          />
+          {error && (
+              <p className={error.includes("successfully") ? "login-success" : "login-error"}>
+                {error}
+              </p>
+          )}
+          <button className="login-button" onClick={handleSubmit}>
+            {isSignup ? "Sign Up" : "Login"}
+          </button>
+          <button
+              className="login-switch-button"
+              onClick={() => {
+                setIsSignup(!isSignup);
+                setError("");
+                setUsername("");
+                setPassword("");
+              }}
+          >
+            {isSignup ? "Already have an account? Login" : "Don't have an account? Sign Up"}
+          </button>
+        </div>
       </div>
-    </div>
   );
 };
 
