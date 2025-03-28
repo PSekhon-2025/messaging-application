@@ -176,7 +176,7 @@ void WebSocketServer::handle_read(std::shared_ptr<Session> session, std::shared_
                             std::cerr << "[DB] Failed to store message from '" << from << "' in room '" << room << "'" << std::endl;
                         }
 
-                        if (room == "test") {
+                        if (true) {
                             std::cout << "[Broadcast] Message from '" << from << "' to chat room '" << room << "': " << text << std::endl;
                             // Broadcast the message to all sessions.
                             for (auto &s : sessions) {
