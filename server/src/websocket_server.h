@@ -21,7 +21,11 @@ struct Session;
 // WebSocketServer now uses Session objects.
 class WebSocketServer {
 public:
-    WebSocketServer(asio::io_context &context, int port, DatabaseManager &dbManager);
+    WebSocketServer(asio::io_context& context, int port, DatabaseManager &dbManager);
+    // Add start_accept() here so it's accessible from main.cpp
+    void start_accept();
+
+    // You may also leave run() if it's still needed.
     void run();
 
 private:
@@ -33,7 +37,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Session>> user_sessions;
     DatabaseManager &dbManager;
 
-    void start_accept();
+
     void handle_session(std::shared_ptr<Session> session);
     void handle_read(std::shared_ptr<Session> session, std::shared_ptr<beast::flat_buffer> buffer);
     void handle_login(const std::string &username, std::shared_ptr<Session> session);
