@@ -2,7 +2,7 @@ import "./ChatDashboard.css";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const users = ["test", "test1", "test2", "test3", "test4", "test5", "test6"];
+const users = ["Room 1", "Room 2", "Room 3", "Room 4", "Room 5", "Room 6", "Room 7"];
 
 const ChatDashboard = () => {
   const navigate = useNavigate();

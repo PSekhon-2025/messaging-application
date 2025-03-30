@@ -1,5 +1,21 @@
 #include "DatabaseManager.h"
 #include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <openssl/sha.h>
+#include <chrono>
+#include <thread>
+
+// Helper function to compute SHA-256 hash of a password
+static std::string hashPassword(const std::string &password) {
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256(reinterpret_cast<const unsigned char*>(password.c_str()), password.size(), hash);
+    std::stringstream ss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+         ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hash[i]);
+    }
+    return ss.str();
+}
 
 DatabaseManager::DatabaseManager(const std::string &dbFile) : db(nullptr), dbFile(dbFile) {}
 
@@ -8,9 +24,6 @@ DatabaseManager::~DatabaseManager() {
         sqlite3_close(db);
     }
 }
-
-#include <chrono>
-#include <thread>
 
 bool DatabaseManager::initDB() {
     std::cout << "Database initialized." << std::endl;
@@ -94,6 +107,9 @@ bool DatabaseManager::initDB() {
 }
 
 bool DatabaseManager::authenticateUser(const std::string &username, const std::string &password) {
+    // Hash the provided password for comparison
+    std::string hashedPassword = hashPassword(password);
+
     sqlite3_busy_timeout(db, 3000); // Wait up to 3 seconds if the DB is locked
 
     const int maxRetries = 3;
@@ -131,7 +147,8 @@ bool DatabaseManager::authenticateUser(const std::string &username, const std::s
             continue;
         } else if (rc == SQLITE_ROW) {
             const unsigned char* dbPassword = sqlite3_column_text(stmt, 0);
-            auth = (password == reinterpret_cast<const char*>(dbPassword));
+            // Compare stored hashed password with hash of provided password
+            auth = (hashedPassword == reinterpret_cast<const char*>(dbPassword));
         }
 
         sqlite3_finalize(stmt);
@@ -155,10 +172,10 @@ bool DatabaseManager::authenticateUser(const std::string &username, const std::s
     return false;
 }
 
-
-
 bool DatabaseManager::registerUser(const std::string &username, const std::string &password) {
-    // Set busy timeout to wait up to 3000ms if database is locked
+    // Hash the password before storing it
+    std::string hashedPassword = hashPassword(password);
+
     sqlite3_busy_timeout(db, 3000);
 
     const int maxRetries = 3;
@@ -187,7 +204,7 @@ bool DatabaseManager::registerUser(const std::string &username, const std::strin
         }
 
         sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, password.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, hashedPassword.c_str(), -1, SQLITE_STATIC);
 
         rc = sqlite3_step(stmt);
         sqlite3_finalize(stmt);
@@ -222,10 +239,7 @@ bool DatabaseManager::registerUser(const std::string &username, const std::strin
     return false;
 }
 
-
-
 bool DatabaseManager::storeMessage(const std::string &room, const std::string &sender, const std::string &content, const std::string &timestamp) {
-    // Set a busy timeout (e.g., 3000ms)
     sqlite3_busy_timeout(db, 3000);
 
     const int maxRetries = 3;
@@ -283,7 +297,6 @@ bool DatabaseManager::storeMessage(const std::string &room, const std::string &s
             return false;
         }
 
-        // Success!
         return true;
     }
 
@@ -291,12 +304,9 @@ bool DatabaseManager::storeMessage(const std::string &room, const std::string &s
     return false;
 }
 
-
-
 std::vector<nlohmann::json> DatabaseManager::getMessagesForRoom(const std::string &room) {
     std::vector<nlohmann::json> messages;
 
-    // Begin transaction
     char* errMsg = nullptr;
     int rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, &errMsg);
     if (rc != SQLITE_OK) {
