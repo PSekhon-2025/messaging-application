@@ -1,5 +1,5 @@
 import "./LoginPage.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
@@ -9,6 +9,12 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [socket, setSocket] = useState(null);
+  const usernameRef = useRef(username);
+
+  // Update the ref whenever username changes
+  useEffect(() => {
+    usernameRef.current = username;
+  }, [username]);
 
   useEffect(() => {
     // Establish a WebSocket connection to the server
@@ -20,6 +26,8 @@ const LoginPage = () => {
       const data = JSON.parse(event.data);
       if (data.type === "login_response") {
         if (data.status === "success") {
+          // Store the username in local storage upon successful login
+          localStorage.setItem("username", usernameRef.current);
           navigate("/dashboard");
         } else {
           setError(data.message);
