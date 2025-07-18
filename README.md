@@ -1,3 +1,5 @@
+# Created as part of operating systems course under Atrisha Sarkar UWO
+
 # High-Performance C++ WebSocket Chat Server
 
 A robust, multithreaded WebSocket chat application demonstrating advanced operating system and networking concepts, built in C++ on Linux using Boost.Asio/Beast and SQLite for persistent storage.
