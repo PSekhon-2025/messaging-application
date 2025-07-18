@@ -1,4 +1,4 @@
-# Created as part of operating systems course under Atrisha Sarkar UWO
+# Note: Created as part of operating systems course under Atrisha Sarkar UWO
 
 # High-Performance C++ WebSocket Chat Server
 
